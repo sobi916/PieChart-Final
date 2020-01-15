@@ -17,6 +17,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -157,7 +158,7 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
         mRadius = (float) (Math.min(mWidth, mHeight) / 2 * 0.6);
         resetRect();
 
-        mInnerRadius = (float) (mRadius * 0.6);
+        mInnerRadius = (float) (mRadius * 0.6)-40;
 
     }
 
@@ -214,15 +215,25 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
 
             }
             canvas.drawPath(mPath, mLinePaint);
-            //垂直方向的偏移量，画文字时，文字显示在path的下方，为了让文字显示在上方，设置一个文字高度的垂直偏移量
+            //Vertical offset. When drawing text, the text is displayed below the path.
+            // To make the text appear above, set a vertical offset of the text height.
             float offsetV = -getTextHeight(mTextPaint, percentText);
+            float offset2 = -getTextHeight(mTextPaint, percentText);
+            Log.i("TAG@",offsetV+"");
+            /**
+             *Below code is for showing specific categories below line path
+             */
+            canvas.drawTextOnPath("Income", mPath, 10, 40, mTextPaint);
+
             canvas.drawTextOnPath(percentText, mPath, 0, offsetV, mTextPaint);
 
 
         }
         mPath.close();
 
-        //这里开始画中心空白部分以及文字，空白部分半径设置为整个圆半径的0.6倍
+        /**
+         * Here we start to draw the blank space in the center and the text.
+         */
 
         canvas.drawCircle(0, 0, mInnerRadius, mBlankPaint);
         double index = Math.ceil(mText.length() / 2) + 1;
@@ -232,11 +243,16 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
         String longerText = mText.substring(0, (int) index);
         calculateTextPaint(longerText);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText(longerText, 0, 0, mTextPaint);
-        canvas.drawText(mText.substring((int) (index)), 0, getTextHeight(mTextPaint, mText) + 6, mTextPaint);
+//        canvas.drawText(longerText, 0, 0, mTextPaint);
+//        canvas.drawText(mText.substring((int) (index)), 0, getTextHeight(mTextPaint, mText) + 6, mTextPaint);
+//        canvas.drawText(mText, 10, 10, mTextPaint);
+
         canvas.restore();
         if (mShowLegend) {
-            drawLegend(canvas);
+            /**
+             * Note:This code is to show extra details of pie chart
+             */
+//            drawLegend(canvas);
         }
     }
 
@@ -276,7 +292,7 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
 
 
     /**
-     * 设置中心文字
+     * Set center text
      *
      * @param text
      */
@@ -285,7 +301,7 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
     }
 
     /**
-     * 计算角度值和各个值的占比
+     * Calculate the angle value and the ratio of each value
      */
     private void setValuesAndColors() {
         float sum = 0;
@@ -303,7 +319,7 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
                 //计算角度
                 BigDecimal angle = res.multiply(totleAngel);
                 mAngles.add(angle.floatValue());
-                //计算百分比保留两位小数并保存
+                //Calculate percentage with two decimal places and save
                 mPercents.add(bigDecimal.multiply(new BigDecimal(100)).divide(sumBigDecimal, 2, BigDecimal.ROUND_HALF_UP).toPlainString());
             }
         }
@@ -477,7 +493,7 @@ public class PieChart extends View implements GestureDetector.OnGestureListener 
      */
     private void calculateTextPaint(String text) {
         if (!TextUtils.isEmpty(text)) {
-            measureText(text, 100);
+            measureText(text, 80);
         }
     }
 

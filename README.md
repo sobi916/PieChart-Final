@@ -1,5 +1,5 @@
 # PieChart
-简单的饼状图
+Step 1:
 ![](screenshot/gif.gif)
 ---
 1、在xml中引用：
